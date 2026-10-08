@@ -11,7 +11,7 @@ bool Game::Init()
         return false;
     }
     
-    m_window = SDL_CreateWindow("Minami", 1280, 720, 0);
+    m_window = SDL_CreateWindow("Minami", WINDOW_WIDTH, WINDOW_HEIGHT, 0);
     
     if(m_window == nullptr)
     {
@@ -28,6 +28,19 @@ bool Game::Init()
     }
 
     SDL_SetRenderVSync(m_renderer, 1);
+    
+    for(int y = 0; y < m_grid.getHeight(); y++)
+    {
+        for(int x = 0; x < m_grid.getWidth(); x++)
+        {
+            if(x == 0 || x == m_grid.getWidth() - 1 || y == 0 || y == m_grid.getHeight() - 1)
+                m_grid.set(x, y, TileType::Wall);
+            else
+                m_grid.set(x, y, TileType::Floor);
+        }
+    }
+
+    m_player.setPosition(360.0f, 100.0f);
 
     return true;
 }
@@ -37,6 +50,7 @@ void Game::render()
     SDL_SetRenderDrawColor(m_renderer, 153, 204, 255, 255);
     SDL_RenderClear(m_renderer);
 
+    m_grid.render(m_renderer);
     m_player.render(m_renderer);
 
     SDL_RenderPresent(m_renderer);
@@ -64,9 +78,9 @@ Vec2 Game::readMovementInput()
     if(keyboardState[SDL_SCANCODE_D])
         directionX += 1;
 
-    normalize({directionX, directionY});
+    Vec2 direction = normalize({directionX, directionY});
 
-    return {directionX, directionY};
+    return direction;
 }
 
 void Game::handleEvents()

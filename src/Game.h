@@ -2,6 +2,7 @@
 #include <SDL3/SDL.h>
 #include "Player.h"
 #include "Math.h"
+#include "Grid.h"
 
 class Game
 {
@@ -17,6 +18,7 @@ private:
     SDL_Renderer* m_renderer = nullptr;
     SDL_Window* m_window = nullptr;
     Player m_player;
+    Grid m_grid{31, 17};
 
     Vec2 readMovementInput();
 

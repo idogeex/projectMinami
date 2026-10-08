@@ -9,6 +9,7 @@ add_executable(ProjectMinami
     src/main.cpp
     src/Game.cpp
     src/Player.cpp
+    src/Grid.cpp
 )
 
 target_include_directories(ProjectMinami PRIVATE
