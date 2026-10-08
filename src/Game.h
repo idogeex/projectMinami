@@ -1,8 +1,9 @@
 #pragma once
 #include <SDL3/SDL.h>
 #include "Player.h"
-#include "Math.h"
+#include "Vec2.h"
 #include "Grid.h"
+#include "MazeGenerator.h"
 
 class Game
 {
@@ -18,9 +19,11 @@ private:
     SDL_Renderer* m_renderer = nullptr;
     SDL_Window* m_window = nullptr;
     Player m_player;
-    Grid m_grid{31, 17};
+    Grid m_grid{LAB_WIDtH, LAB_HEIGHT};
 
     Vec2 readMovementInput();
+    
+    void startNewLevel();
 
     void update(float deltaTime);
     void render();

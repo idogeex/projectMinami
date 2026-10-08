@@ -10,6 +10,7 @@ add_executable(ProjectMinami
     src/Game.cpp
     src/Player.cpp
     src/Grid.cpp
+    src/MazeGenerator.cpp
 )
 
 target_include_directories(ProjectMinami PRIVATE

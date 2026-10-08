@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <algorithm>
+#include <random>
 
 bool Game::Init()
 {
@@ -28,21 +29,19 @@ bool Game::Init()
     }
 
     SDL_SetRenderVSync(m_renderer, 1);
-    
-    for(int y = 0; y < m_grid.getHeight(); y++)
-    {
-        for(int x = 0; x < m_grid.getWidth(); x++)
-        {
-            if(x == 0 || x == m_grid.getWidth() - 1 || y == 0 || y == m_grid.getHeight() - 1)
-                m_grid.set(x, y, TileType::Wall);
-            else
-                m_grid.set(x, y, TileType::Floor);
-        }
-    }
 
-    m_player.setPosition(360.0f, 100.0f);
+    startNewLevel();
+
+    m_player.setPosition(1 * TILE_SIZE + ((TILE_SIZE - 28) / 2), 1 * TILE_SIZE + ((TILE_SIZE - 28) / 2));
 
     return true;
+}
+
+void Game::startNewLevel()
+{
+    unsigned int seed = std::random_device{}();
+    SDL_Log("Current seed: %u", seed);
+    MazeGenerator::createMaze(m_grid, seed);
 }
 
 void Game::render()
@@ -97,6 +96,11 @@ void Game::handleEvents()
                 m_running = false;
             if(event.key.key == SDLK_SPACE)
                 m_player.takeDamage(50);
+            if(event.key.key == SDLK_R)
+            {
+                m_grid = {LAB_WIDtH, LAB_HEIGHT};
+                startNewLevel();
+            }
         }
     }
 }
