@@ -2,6 +2,7 @@
 #include "Constants.h"
 
 #include <vector>
+#include <algorithm>
 #include <SDL3/SDL.h>
 
 class Grid
@@ -15,6 +16,8 @@ public:
     int getWidth() const { return m_width; }
     int getHeight() const { return m_height; }
     void render(SDL_Renderer* renderer) const;
+    void fill(TileType type);
+    int count(TileType type) const;
 
 private:
     std::vector<TileType> m_tiles;

@@ -3,11 +3,7 @@
 
 void Player::render(SDL_Renderer* renderer) const
 {
-    SDL_FRect rect;
-    rect.x = m_x;
-    rect.y = m_y;
-    rect.w = m_size;
-    rect.h = m_size;
+    SDL_FRect rect = getBounds();
     SDL_SetRenderDrawColor(renderer, 74, 74, 74, 255);
     SDL_RenderFillRect(renderer, &rect);
 }
@@ -38,4 +34,15 @@ void Player::takeDamage(int amount)
         m_currentHP = 0;
     }
     SDL_Log("Player received damage: %d, Current HP: %d, %s", amount, m_currentHP, isAlive() ? "true" : "false");
+}
+
+SDL_FRect Player::getBounds() const
+{
+    SDL_FRect rect;
+    rect.x = m_x;
+    rect.y = m_y;
+    rect.w = m_size;
+    rect.h = m_size;
+
+    return rect;
 }

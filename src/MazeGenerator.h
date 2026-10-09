@@ -9,10 +9,7 @@ struct Point
     int y;
 };
 
-class MazeGenerator
+namespace MazeGenerator
 {
-public:
-    static void createMaze(Grid &grid, unsigned int seed);
-private:
-
-};
+    void createMaze(Grid &grid, unsigned int seed);
+}

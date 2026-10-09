@@ -19,7 +19,7 @@ private:
     SDL_Renderer* m_renderer = nullptr;
     SDL_Window* m_window = nullptr;
     Player m_player;
-    Grid m_grid{LAB_WIDtH, LAB_HEIGHT};
+    Grid m_grid{LAB_WIDTH, LAB_HEIGHT};
 
     Vec2 readMovementInput();
     

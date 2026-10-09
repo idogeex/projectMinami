@@ -51,3 +51,13 @@ void Grid::render(SDL_Renderer* renderer) const
         }
     }
 }
+
+void Grid::fill(TileType type)
+{
+    std::fill(m_tiles.begin(), m_tiles.end(), type);
+}
+
+int Grid::count(TileType type) const
+{   
+    return std::count(m_tiles.begin(), m_tiles.end(), type);
+}

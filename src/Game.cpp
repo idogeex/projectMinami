@@ -32,16 +32,16 @@ bool Game::Init()
 
     startNewLevel();
 
-    m_player.setPosition(1 * TILE_SIZE + ((TILE_SIZE - 28) / 2), 1 * TILE_SIZE + ((TILE_SIZE - 28) / 2));
-
     return true;
 }
 
 void Game::startNewLevel()
 {
+    m_player.setCenter(1.5f * TILE_SIZE, 1.5f * TILE_SIZE);
     unsigned int seed = std::random_device{}();
     SDL_Log("Current seed: %u", seed);
     MazeGenerator::createMaze(m_grid, seed);
+    SDL_Log("Floor tiles: %d", m_grid.count(TileType::Floor));
 }
 
 void Game::render()
@@ -98,7 +98,6 @@ void Game::handleEvents()
                 m_player.takeDamage(50);
             if(event.key.key == SDLK_R)
             {
-                m_grid = {LAB_WIDtH, LAB_HEIGHT};
                 startNewLevel();
             }
         }

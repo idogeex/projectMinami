@@ -6,7 +6,8 @@ class Player
 {
 public:
     Player() = default;
-    void setPosition(float x, float y) { m_x = x, m_y = y; }
+    void setPosition(float x, float y) { m_x = x; m_y = y; }
+    void setCenter(float x, float y) { m_x = x - m_size / 2; m_y = y - m_size / 2; }
     void render(SDL_Renderer* renderer) const;
     void update(float deltaTime, Vec2 direction);
     void takeDamage(int amount);
@@ -20,5 +21,5 @@ private:
     float m_speed = 100.0f;
     int m_maxHP = 100;
     int m_currentHP = 100;
-    int m_damage;
+    int m_damage = 0;
 };
