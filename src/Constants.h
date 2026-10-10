@@ -10,7 +10,14 @@ constexpr int LAB_HEIGHT = 17;
 enum class TileType : uint8_t
 {
     Floor,
-    Wall
+    Wall,
+    Exit
+};
+
+enum class GameState
+{
+    Playing,
+    Won
 };
 
 //notes

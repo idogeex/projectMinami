@@ -1,6 +1,7 @@
 #pragma once
 #include <SDL3/SDL.h>
 #include "Vec2.h"
+#include "Grid.h"
 
 class Player
 {
@@ -9,7 +10,7 @@ public:
     void setPosition(float x, float y) { m_x = x; m_y = y; }
     void setCenter(float x, float y) { m_x = x - m_size / 2; m_y = y - m_size / 2; }
     void render(SDL_Renderer* renderer) const;
-    void update(float deltaTime, Vec2 direction);
+    void update(float deltaTime, Vec2 direction, const Grid& grid);
     void takeDamage(int amount);
     bool isAlive() const { return m_currentHP > 0; }
     int getHP() const { return m_currentHP; }
@@ -18,7 +19,7 @@ public:
 private:
     float m_x = 0.0f, m_y = 0.0f;
     float m_size = 28;
-    float m_speed = 100.0f;
+    float m_speed = 200.0f;
     int m_maxHP = 100;
     int m_currentHP = 100;
     int m_damage = 0;

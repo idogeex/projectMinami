@@ -8,22 +8,21 @@ void Player::render(SDL_Renderer* renderer) const
     SDL_RenderFillRect(renderer, &rect);
 }
 
-void Player::update(float deltaTime, Vec2 direction)
+void Player::update(float deltaTime, Vec2 direction, const Grid& grid)
 {
-    m_y += direction.y * m_speed * deltaTime;
+    float tempX = m_x;
     m_x += direction.x * m_speed * deltaTime;
+    if(grid.collidesWith(getBounds()))
+    {
+        m_x = tempX;
+    }
 
-    if (m_x < 0)
-        m_x = 0;
-
-    if (m_x > WINDOW_WIDTH - m_size)
-        m_x = WINDOW_WIDTH - m_size;
-
-    if (m_y < 0)
-        m_y = 0;
-    
-    if (m_y > WINDOW_HEIGHT - m_size)
-        m_y = WINDOW_HEIGHT - m_size;
+    float tempY = m_y;
+    m_y += direction.y * m_speed * deltaTime;
+    if(grid.collidesWith(getBounds()))
+    {
+        m_y = tempY;
+    }
 }
 
 void Player::takeDamage(int amount)

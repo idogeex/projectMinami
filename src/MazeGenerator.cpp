@@ -41,4 +41,6 @@ void MazeGenerator::createMaze(Grid& grid, unsigned int seed)
         if(!moved)
             stack.pop_back();
     }
+    
+    grid.set(grid.getWidth() - 2, grid.getHeight() - 2, TileType::Exit);
 }

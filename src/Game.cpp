@@ -37,11 +37,12 @@ bool Game::Init()
 
 void Game::startNewLevel()
 {
-    m_player.setCenter(1.5f * TILE_SIZE, 1.5f * TILE_SIZE);
+    m_state = GameState::Playing;
     unsigned int seed = std::random_device{}();
     SDL_Log("Current seed: %u", seed);
     MazeGenerator::createMaze(m_grid, seed);
     SDL_Log("Floor tiles: %d", m_grid.count(TileType::Floor));
+    m_player.setCenter(1.5f * TILE_SIZE, 1.5f * TILE_SIZE);
 }
 
 void Game::render()
@@ -51,13 +52,28 @@ void Game::render()
 
     m_grid.render(m_renderer);
     m_player.render(m_renderer);
-
+    if(m_state == GameState::Won)
+    {
+        SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_BLEND);
+        SDL_SetRenderDrawColor(m_renderer, 255, 0, 0, 128);
+        SDL_FRect solidRect = { WINDOW_WIDTH / 2 - 200, WINDOW_HEIGHT / 2 - 200, 400, 400 };
+        SDL_RenderFillRect(m_renderer, &solidRect);
+    }
     SDL_RenderPresent(m_renderer);
 }
 
 void Game::update(float deltaTime)
-{
-    m_player.update(deltaTime, readMovementInput());
+{   
+    switch(m_state)
+    {
+    case GameState::Playing:
+        m_player.update(deltaTime, readMovementInput(), m_grid);
+        if(m_grid.getAtPixel(m_player.getBounds().x + m_player.getBounds().w / 2, m_player.getBounds().y + m_player.getBounds().h / 2) == TileType::Exit)
+            m_state = GameState::Won;
+        break;
+    case GameState::Won:
+        break;
+    }
 }
 
 Vec2 Game::readMovementInput()
@@ -94,11 +110,12 @@ void Game::handleEvents()
         {
             if(event.key.key == SDLK_ESCAPE)
                 m_running = false;
-            if(event.key.key == SDLK_SPACE)
-                m_player.takeDamage(50);
             if(event.key.key == SDLK_R)
+                startNewLevel();
+            if(m_state == GameState::Won && event.key.key == SDLK_SPACE)
             {
                 startNewLevel();
+                m_state = GameState::Playing;
             }
         }
     }

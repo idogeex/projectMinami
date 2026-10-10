@@ -20,7 +20,7 @@ private:
     SDL_Window* m_window = nullptr;
     Player m_player;
     Grid m_grid{LAB_WIDTH, LAB_HEIGHT};
-
+    GameState m_state = GameState::Playing;
     Vec2 readMovementInput();
     
     void startNewLevel();

@@ -1,4 +1,6 @@
 #include "Grid.h"
+#include <SDL3/SDL.h>
+#include <cmath>
 
 Grid::Grid(int width, int height): m_width(width), m_height(height), m_tiles(width * height, TileType::Wall)
 {
@@ -11,6 +13,13 @@ TileType Grid::get(int x, int y) const
         return TileType::Wall;
 
     return m_tiles[getIndex(x, y)];
+}
+
+TileType Grid::getAtPixel(float x, float y) const
+{
+    int px = static_cast<int>(std::floor(x / TILE_SIZE));
+    int py = static_cast<int>(std::floor(y / TILE_SIZE));
+    return m_tiles[getIndex(px, py)];
 }
 
 void Grid::set(int x, int y, TileType type)
@@ -45,6 +54,9 @@ void Grid::render(SDL_Renderer* renderer) const
             case TileType::Floor:
                 SDL_SetRenderDrawColor(renderer, 26, 26, 26, 255);
                 break;
+            case TileType::Exit:
+                SDL_SetRenderDrawColor(renderer, 46, 139, 87, 255);
+                break;
             }
 
             SDL_RenderFillRect(renderer, &tile);
@@ -60,4 +72,30 @@ void Grid::fill(TileType type)
 int Grid::count(TileType type) const
 {   
     return std::count(m_tiles.begin(), m_tiles.end(), type);
+}
+
+bool Grid::collidesWith(const SDL_FRect& rect) const
+{
+    int left = static_cast<int>(std::floor(rect.x / TILE_SIZE));
+    int right = static_cast<int>(std::floor(rect.x + rect.w - 0.001f / TILE_SIZE));
+    int up = static_cast<int>(std::floor(rect.y / TILE_SIZE));
+    int down = static_cast<int>(std::floor((rect.y + rect.h - 0.001f) / TILE_SIZE));
+
+    for(float y = up; y <= down; y++)
+    {
+        for(int x = left; x <= right; x++)
+        {
+            if(get(x, y) == TileType::Wall)
+            {
+                SDL_FRect tile;
+                tile.w = TILE_SIZE;
+                tile.h = TILE_SIZE;
+                tile.x = x * TILE_SIZE;
+                tile.y = y * TILE_SIZE;
+                if(SDL_HasRectIntersectionFloat(&tile, &rect))
+                    return true;
+            } 
+        }
+    }
+    return false;
 }
