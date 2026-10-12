@@ -41,6 +41,8 @@ void Game::startNewLevel()
     unsigned int seed = std::random_device{}();
     SDL_Log("Current seed: %u", seed);
     MazeGenerator::createMaze(m_grid, seed);
+    m_camera.worldWidth = m_grid.getWidth() * TILE_SIZE;
+    m_camera.worldHeight = m_grid.getHeight() * TILE_SIZE;
     SDL_Log("Floor tiles: %d", m_grid.count(TileType::Floor));
     m_player.setCenter(1.5f * TILE_SIZE, 1.5f * TILE_SIZE);
     m_camera.centerOn(m_player.getBounds());

@@ -35,12 +35,23 @@ bool Grid::inBounds(int x, int y) const
 
 void Grid::render(SDL_Renderer* renderer, const Camera& camera) const
 {
-    for(int y = 0; y < m_height; y++)
+    int firstX = static_cast<int>(std::floor(camera.cameraPosition.x / TILE_SIZE));
+    int lastX = static_cast<int>(std::floor((camera.cameraPosition.x + camera.viewPortWidth) / TILE_SIZE));
+    int firstY = static_cast<int>(std::floor(camera.cameraPosition.y / TILE_SIZE));
+    int lastY = static_cast<int>(std::floor((camera.cameraPosition.y + camera.viewPortHeight) / TILE_SIZE)); 
+
+    firstX = std::clamp(firstX, 0, m_width - 1);
+    lastX = std::clamp(lastX, 0, m_width - 1);
+    firstY = std::clamp(firstY, 0, m_height - 1);
+    lastY = std::clamp(lastY, 0, m_height - 1);
+
+    for(int y = firstY; y <= lastY; y++)
     {
-        for(int x = 0; x < m_width; x++)
+        for(int x = firstX; x <= lastX; x++)
         {
             SDL_FRect tile = camera.worldToScreen({static_cast<float>(x * TILE_SIZE), static_cast<float>(y * TILE_SIZE),
                                                  TILE_SIZE, TILE_SIZE});
+
             switch(get(x, y))
             {
                 case TileType::Wall:
