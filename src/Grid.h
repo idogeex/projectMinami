@@ -1,5 +1,6 @@
 #pragma once
 #include "Constants.h"
+#include "Camera.h"
 
 #include <vector>
 #include <algorithm>
@@ -16,7 +17,7 @@ public:
     bool inBounds(int x, int y) const;
     int getWidth() const { return m_width; }
     int getHeight() const { return m_height; }
-    void render(SDL_Renderer* renderer) const;
+    void render(SDL_Renderer* renderer, const Camera& camera) const;
     void fill(TileType type);
     int count(TileType type) const;
     bool collidesWith(const SDL_FRect& rect) const;

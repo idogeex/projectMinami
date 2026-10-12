@@ -43,6 +43,7 @@ void Game::startNewLevel()
     MazeGenerator::createMaze(m_grid, seed);
     SDL_Log("Floor tiles: %d", m_grid.count(TileType::Floor));
     m_player.setCenter(1.5f * TILE_SIZE, 1.5f * TILE_SIZE);
+    m_camera.centerOn(m_player.getBounds());
 }
 
 void Game::render()
@@ -50,8 +51,8 @@ void Game::render()
     SDL_SetRenderDrawColor(m_renderer, 153, 204, 255, 255);
     SDL_RenderClear(m_renderer);
 
-    m_grid.render(m_renderer);
-    m_player.render(m_renderer);
+    m_grid.render(m_renderer, m_camera);
+    m_player.render(m_renderer, m_camera);
     if(m_state == GameState::Won)
     {
         SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_BLEND);
@@ -67,12 +68,18 @@ void Game::update(float deltaTime)
     switch(m_state)
     {
     case GameState::Playing:
+    {
         m_player.update(deltaTime, readMovementInput(), m_grid);
-        if(m_grid.getAtPixel(m_player.getBounds().x + m_player.getBounds().w / 2, m_player.getBounds().y + m_player.getBounds().h / 2) == TileType::Exit)
+        SDL_FRect pBounds = m_player.getBounds();
+        m_camera.centerOn(pBounds);
+        if(m_grid.getAtPixel(pBounds.x + pBounds.w / 2, pBounds.y + pBounds.h / 2) == TileType::Exit)
             m_state = GameState::Won;
         break;
+    }
     case GameState::Won:
+    {
         break;
+    }
     }
 }
 
@@ -115,7 +122,6 @@ void Game::handleEvents()
             if(m_state == GameState::Won && event.key.key == SDLK_SPACE)
             {
                 startNewLevel();
-                m_state = GameState::Playing;
             }
         }
     }

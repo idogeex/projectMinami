@@ -2,6 +2,7 @@
 #include <SDL3/SDL.h>
 #include "Vec2.h"
 #include "Grid.h"
+#include "Camera.h"
 
 class Player
 {
@@ -9,7 +10,7 @@ public:
     Player() = default;
     void setPosition(float x, float y) { m_x = x; m_y = y; }
     void setCenter(float x, float y) { m_x = x - m_size / 2; m_y = y - m_size / 2; }
-    void render(SDL_Renderer* renderer) const;
+    void render(SDL_Renderer* renderer, const Camera& camera) const;
     void update(float deltaTime, Vec2 direction, const Grid& grid);
     void takeDamage(int amount);
     bool isAlive() const { return m_currentHP > 0; }

@@ -4,8 +4,8 @@
 constexpr int WINDOW_WIDTH = 1280;
 constexpr int WINDOW_HEIGHT = 720;
 constexpr int TILE_SIZE = 40;
-constexpr int LAB_WIDTH = 31;
-constexpr int LAB_HEIGHT = 17;
+constexpr int LAB_WIDTH = 61;
+constexpr int LAB_HEIGHT = 41;
 
 enum class TileType : uint8_t
 {

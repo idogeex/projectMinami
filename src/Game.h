@@ -4,6 +4,7 @@
 #include "Vec2.h"
 #include "Grid.h"
 #include "MazeGenerator.h"
+#include "Camera.h"
 
 class Game
 {
@@ -22,6 +23,7 @@ private:
     Grid m_grid{LAB_WIDTH, LAB_HEIGHT};
     GameState m_state = GameState::Playing;
     Vec2 readMovementInput();
+    Camera m_camera;
     
     void startNewLevel();
 

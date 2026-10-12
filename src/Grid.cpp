@@ -19,7 +19,7 @@ TileType Grid::getAtPixel(float x, float y) const
 {
     int px = static_cast<int>(std::floor(x / TILE_SIZE));
     int py = static_cast<int>(std::floor(y / TILE_SIZE));
-    return m_tiles[getIndex(px, py)];
+    return get(px, py);
 }
 
 void Grid::set(int x, int y, TileType type)
@@ -33,31 +33,32 @@ bool Grid::inBounds(int x, int y) const
     return x >= 0 && x < m_width && y >= 0 && y < m_height;
 }
 
-void Grid::render(SDL_Renderer* renderer) const
+void Grid::render(SDL_Renderer* renderer, const Camera& camera) const
 {
     for(int y = 0; y < m_height; y++)
     {
         for(int x = 0; x < m_width; x++)
         {
-            SDL_FRect tile;
-            tile.x = x * TILE_SIZE;
-            tile.y = y * TILE_SIZE;
-            tile.h = TILE_SIZE;
-            tile.w = TILE_SIZE;
-
+            SDL_FRect tile = camera.worldToScreen({static_cast<float>(x * TILE_SIZE), static_cast<float>(y * TILE_SIZE),
+                                                 TILE_SIZE, TILE_SIZE});
             switch(get(x, y))
             {
-            case TileType::Wall:
-                SDL_SetRenderDrawColor(renderer, 148, 0, 211, 255);
-                break;
-
-            case TileType::Floor:
-                SDL_SetRenderDrawColor(renderer, 26, 26, 26, 255);
-                break;
-            case TileType::Exit:
-                SDL_SetRenderDrawColor(renderer, 46, 139, 87, 255);
-                break;
-            }
+                case TileType::Wall:
+                {
+                    SDL_SetRenderDrawColor(renderer, 148, 0, 211, 255);
+                    break;
+                }
+                case TileType::Floor:
+                {
+                    SDL_SetRenderDrawColor(renderer, 26, 26, 26, 255);
+                    break;
+                }
+                case TileType::Exit:
+                {
+                    SDL_SetRenderDrawColor(renderer, 46, 139, 87, 255);
+                    break;
+                }    
+            }   
 
             SDL_RenderFillRect(renderer, &tile);
         }
@@ -77,11 +78,11 @@ int Grid::count(TileType type) const
 bool Grid::collidesWith(const SDL_FRect& rect) const
 {
     int left = static_cast<int>(std::floor(rect.x / TILE_SIZE));
-    int right = static_cast<int>(std::floor(rect.x + rect.w - 0.001f / TILE_SIZE));
+    int right = static_cast<int>(std::floor((rect.x + rect.w - 0.001f) / TILE_SIZE));
     int up = static_cast<int>(std::floor(rect.y / TILE_SIZE));
     int down = static_cast<int>(std::floor((rect.y + rect.h - 0.001f) / TILE_SIZE));
 
-    for(float y = up; y <= down; y++)
+    for(int y = up; y <= down; y++)
     {
         for(int x = left; x <= right; x++)
         {
