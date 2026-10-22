@@ -5,6 +5,7 @@
 #include "Grid.h"
 #include "MazeGenerator.h"
 #include "Camera.h"
+#include "LevelConfig.h"
 
 class Game
 {
@@ -20,11 +21,12 @@ private:
     SDL_Renderer* m_renderer = nullptr;
     SDL_Window* m_window = nullptr;
     Player m_player;
-    Grid m_grid{LAB_WIDTH, LAB_HEIGHT};
+    Grid m_grid;
     GameState m_state = GameState::Playing;
     Vec2 readMovementInput();
     Camera m_camera;
-    
+    int m_level = 1;
+        
     void startNewLevel();
 
     void update(float deltaTime);

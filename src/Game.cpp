@@ -39,11 +39,14 @@ void Game::startNewLevel()
 {
     m_state = GameState::Playing;
     unsigned int seed = std::random_device{}();
-    SDL_Log("Current seed: %u", seed);
+    auto [w, h] = LevelConfig::getLevelConfig(m_level);
+    int tileWidth = 2 * w - 1, tileHeight = 2 * h - 1;
+    m_grid = Grid(tileWidth, tileHeight);
     MazeGenerator::createMaze(m_grid, seed);
     m_camera.worldWidth = m_grid.getWidth() * TILE_SIZE;
     m_camera.worldHeight = m_grid.getHeight() * TILE_SIZE;
-    SDL_Log("Floor tiles: %d", m_grid.count(TileType::Floor));
+    SDL_Log("Level: %d, Seed: %u, Width: %d, Height: %d, Floor: %d", 
+            m_level, seed, tileWidth, tileHeight, m_grid.count(TileType::Floor));
     m_player.setCenter(1.5f * TILE_SIZE, 1.5f * TILE_SIZE);
     m_camera.centerOn(m_player.getBounds());
 }
@@ -75,7 +78,9 @@ void Game::update(float deltaTime)
         SDL_FRect pBounds = m_player.getBounds();
         m_camera.centerOn(pBounds);
         if(m_grid.getAtPixel(pBounds.x + pBounds.w / 2, pBounds.y + pBounds.h / 2) == TileType::Exit)
+        {
             m_state = GameState::Won;
+        }
         break;
     }
     case GameState::Won:
@@ -120,9 +125,17 @@ void Game::handleEvents()
             if(event.key.key == SDLK_ESCAPE)
                 m_running = false;
             if(event.key.key == SDLK_R)
+            {
                 startNewLevel();
+            }
             if(m_state == GameState::Won && event.key.key == SDLK_SPACE)
             {
+                m_level++;
+                startNewLevel();
+            }
+            if(event.key.key == SDLK_N)
+            {
+                m_level = 1;
                 startNewLevel();
             }
         }

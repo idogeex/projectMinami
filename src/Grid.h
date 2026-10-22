@@ -9,6 +9,7 @@
 class Grid
 {
 public:
+    Grid() = default;
     Grid(int width, int height);
 
     TileType get(int x, int y) const;
