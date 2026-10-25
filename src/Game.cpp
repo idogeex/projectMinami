@@ -28,6 +28,8 @@ bool Game::Init()
         return false;
     }
 
+    m_hud.init();
+
     SDL_SetRenderVSync(m_renderer, 1);
 
     startNewLevel();
@@ -38,6 +40,7 @@ bool Game::Init()
 void Game::startNewLevel()
 {
     m_state = GameState::Playing;
+    m_levelTime = 0;
     unsigned int seed = std::random_device{}();
     auto [w, h] = LevelConfig::getLevelConfig(m_level);
     int tileWidth = 2 * w - 1, tileHeight = 2 * h - 1;
@@ -58,13 +61,15 @@ void Game::render()
 
     m_grid.render(m_renderer, m_camera);
     m_player.render(m_renderer, m_camera);
+    m_hud.render(m_renderer, m_level, m_player.getHP(), static_cast<int>(m_levelTime));
     if(m_state == GameState::Won)
     {
         SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_BLEND);
         SDL_SetRenderDrawColor(m_renderer, 255, 0, 0, 128);
         SDL_FRect solidRect = { WINDOW_WIDTH / 2 - 200, WINDOW_HEIGHT / 2 - 200, 400, 400 };
         SDL_RenderFillRect(m_renderer, &solidRect);
-    }
+        m_hud.renderMessage(m_renderer, "Level complete! Press SPACE.");
+    }    
     SDL_RenderPresent(m_renderer);
 }
 
@@ -81,6 +86,7 @@ void Game::update(float deltaTime)
         {
             m_state = GameState::Won;
         }
+        m_levelTime += deltaTime;
         break;
     }
     case GameState::Won:
@@ -162,6 +168,7 @@ void Game::Run()
 
 Game::~Game()
 {
+    m_hud.shutDown();
     SDL_DestroyRenderer(m_renderer);
     SDL_DestroyWindow(m_window);
     SDL_Quit();

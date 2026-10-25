@@ -11,6 +11,7 @@ add_executable(ProjectMinami
     src/Player.cpp
     src/Grid.cpp
     src/MazeGenerator.cpp
+    src/Hud.cpp
 )
 
 target_include_directories(ProjectMinami PRIVATE
@@ -19,14 +20,17 @@ target_include_directories(ProjectMinami PRIVATE
 
 target_link_directories(ProjectMinami PRIVATE
     ${CMAKE_SOURCE_DIR}/lib/SDL3
+    ${CMAKE_SOURCE_DIR}/lib/SDL3_ttf
 )
 
 target_link_libraries(ProjectMinami PRIVATE
     SDL3
+    SDL3_ttf
 )
 
 add_custom_command(TARGET ProjectMinami POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${CMAKE_SOURCE_DIR}/dll/SDL3.dll"
+        "${CMAKE_SOURCE_DIR}/dll/SDL3_ttf.dll"
         "$<TARGET_FILE_DIR:ProjectMinami>"
 )
