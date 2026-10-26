@@ -28,7 +28,11 @@ bool Game::Init()
         return false;
     }
 
-    m_hud.init();
+    if(!m_hud.init())
+    {
+        SDL_Log("Couldnt init TTF: %s", SDL_GetError());
+        return false;
+    }
 
     SDL_SetRenderVSync(m_renderer, 1);
 

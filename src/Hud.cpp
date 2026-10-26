@@ -52,6 +52,7 @@ bool Hud::drawText(SDL_Renderer* renderer, CachedText &slot,
         if(slot.texture != nullptr)
         {
             SDL_DestroyTexture(slot.texture);
+            slot.texture = nullptr;
         }
 
         SDL_Surface* textSurface = TTF_RenderText_Blended(m_font, text.c_str(), 0, color);
@@ -61,12 +62,12 @@ bool Hud::drawText(SDL_Renderer* renderer, CachedText &slot,
             return false;
         }
         slot.texture = SDL_CreateTextureFromSurface(renderer, textSurface);
+        SDL_DestroySurface(textSurface);
         if(!slot.texture)
         {
             SDL_Log("Couldnt create texture: %s", SDL_GetError());
             return false;
         }
-        SDL_DestroySurface(textSurface);
         slot.text = text;
     }
 
