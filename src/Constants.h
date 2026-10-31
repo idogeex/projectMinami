@@ -20,6 +20,12 @@ enum class GameState
     Won
 };
 
+struct Point
+{
+    int x;
+    int y;
+};
+
 //notes
 /*
     SDL_SetRenderDrawColor(m_renderer, 26, 26, 26, 255); // deep charcoal for the floor

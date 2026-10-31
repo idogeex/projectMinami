@@ -15,6 +15,7 @@ public:
     void takeDamage(int amount);
     bool isAlive() const { return m_currentHP > 0; }
     int getHP() const { return m_currentHP; }
+    float getSpeed() const { return m_speed; }
     SDL_FRect getBounds() const;
 
 private:
