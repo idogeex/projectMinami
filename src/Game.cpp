@@ -36,24 +36,37 @@ bool Game::Init()
 
     SDL_SetRenderVSync(m_renderer, 1);
 
-    startNewLevel();
-
     return true;
 }
 
 void Game::startNewLevel()
 {
     m_state = GameState::Playing;
-    m_levelTime = 0;
     unsigned int seed = std::random_device{}();
-    auto [w, h] = LevelConfig::getLevelConfig(m_level);
-    int tileWidth = 2 * w - 1, tileHeight = 2 * h - 1;
-    m_grid = Grid(tileWidth, tileHeight);
+
+    LevelConfig config = LevelConfig::getLevelConfig(m_level);
+    m_grid = Grid(config.width, config.height);
+
     MazeGenerator::createMaze(m_grid, seed);
+
+    Point start = {1, 1};
+    Point goal = {m_grid.getWidth() - 2, m_grid.getHeight() - 2};
+
+    int steps = Pathfinding::shortestPathLength(m_grid, start, goal);
+    if(steps == -1)
+    {
+        m_timeLeft = 60.0f;
+    }
+    else
+    {
+        m_timeLeft = steps * TILE_SIZE / m_player.getSpeed() * config.timeFactor;
+    }
+    SDL_Log("Path: %d steps, time limit: %.1f s", steps, m_timeLeft);
+
     m_camera.worldWidth = m_grid.getWidth() * TILE_SIZE;
     m_camera.worldHeight = m_grid.getHeight() * TILE_SIZE;
     SDL_Log("Level: %d, Seed: %u, Width: %d, Height: %d, Floor: %d", 
-            m_level, seed, tileWidth, tileHeight, m_grid.count(TileType::Floor));
+            m_level, seed, config.width, config.height, m_grid.count(TileType::Floor));
     m_player.setCenter(1.5f * TILE_SIZE, 1.5f * TILE_SIZE);
     m_camera.centerOn(m_player.getBounds());
 }
@@ -63,40 +76,92 @@ void Game::render()
     SDL_SetRenderDrawColor(m_renderer, 153, 204, 255, 255);
     SDL_RenderClear(m_renderer);
 
-    m_grid.render(m_renderer, m_camera);
-    m_player.render(m_renderer, m_camera);
-    m_hud.render(m_renderer, m_level, m_player.getHP(), static_cast<int>(m_levelTime));
-    if(m_state == GameState::Won)
+    if(m_state != GameState::Menu)
     {
-        SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_BLEND);
-        SDL_SetRenderDrawColor(m_renderer, 255, 0, 0, 128);
-        SDL_FRect solidRect = { WINDOW_WIDTH / 2 - 200, WINDOW_HEIGHT / 2 - 200, 400, 400 };
-        SDL_RenderFillRect(m_renderer, &solidRect);
-        m_hud.renderMessage(m_renderer, "Level complete! Press SPACE.");
+        m_grid.render(m_renderer, m_camera);
+        m_player.render(m_renderer, m_camera);
+        m_hud.render(m_renderer, m_level, m_player.getHP(), static_cast<int>(std::ceil(m_timeLeft)));
+    }
+
+    switch(m_state)
+    {
+        case GameState::Won:
+        {
+            renderOverlay({0, 255, 0, 128}, "Level complete! Press SPACE.");
+            break;
+        }
+        case GameState::Lost:
+        {
+            renderOverlay({255, 0, 0, 128}, "Time is up! Press SPACE.");
+            break;
+        }
+        case GameState::Paused:
+        {
+            renderOverlay({128, 128, 0, 128}, "PAUSED");
+            break;
+        }
+        case GameState::Menu:
+        {
+            renderOverlay({0, 0, 0, 0}, "PRESS ENTER TO START");
+            break;
+        }
+        case GameState::Playing:
+        {
+            break;
+        }
     }    
     SDL_RenderPresent(m_renderer);
+}
+
+void Game::renderOverlay(SDL_Color color, const std::string& message)
+{
+    SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a);
+    SDL_FRect solidRect = { WINDOW_WIDTH / 2 - 200, WINDOW_HEIGHT / 2 - 200, 400, 400 };
+    SDL_RenderFillRect(m_renderer, &solidRect);
+    m_hud.renderMessage(m_renderer, message);
 }
 
 void Game::update(float deltaTime)
 {   
     switch(m_state)
     {
-    case GameState::Playing:
-    {
-        m_player.update(deltaTime, readMovementInput(), m_grid);
-        SDL_FRect pBounds = m_player.getBounds();
-        m_camera.centerOn(pBounds);
-        if(m_grid.getAtPixel(pBounds.x + pBounds.w / 2, pBounds.y + pBounds.h / 2) == TileType::Exit)
+        case GameState::Playing:
         {
-            m_state = GameState::Won;
+            m_player.update(deltaTime, readMovementInput(), m_grid);
+            SDL_FRect pBounds = m_player.getBounds();
+            m_camera.centerOn(pBounds);
+            if(m_grid.getAtPixel(pBounds.x + pBounds.w / 2, pBounds.y + pBounds.h / 2) == TileType::Exit)
+            {
+                m_state = GameState::Won;
+            }
+            else
+            {
+                m_timeLeft -= deltaTime;
+                if(m_timeLeft <= 0)
+                {
+                    m_timeLeft = 0;
+                    m_state = GameState::Lost;
+                }   
+            }
+            break;
         }
-        m_levelTime += deltaTime;
-        break;
-    }
-    case GameState::Won:
-    {
-        break;
-    }
+        case GameState::Won:
+        {
+            break;
+        }
+        case GameState::Lost:
+        {
+            break;
+        }
+        case GameState::Paused:
+        {
+            break;
+        }
+        case GameState::Menu:
+        {
+            break;
+        }
     }
 }
 
@@ -130,23 +195,65 @@ void Game::handleEvents()
         if(event.type == SDL_EVENT_QUIT)
             m_running = false;
 
-        if(event.type == SDL_EVENT_KEY_DOWN)
+        if(event.type == SDL_EVENT_KEY_DOWN && !event.key.repeat)
         {
-            if(event.key.key == SDLK_ESCAPE)
-                m_running = false;
-            if(event.key.key == SDLK_R)
+            switch(m_state)
             {
-                startNewLevel();
+            case GameState::Menu:
+            {
+                if(event.key.key == SDLK_RETURN)
+                {
+                    m_level = 1;
+                    startNewLevel();
+                }
+                break;
             }
-            if(m_state == GameState::Won && event.key.key == SDLK_SPACE)
+            case GameState::Playing:
             {
-                m_level++;
-                startNewLevel();
+                if(event.key.key == SDLK_ESCAPE)
+                {
+                    m_state = GameState::Paused;
+                }
+                break;
             }
-            if(event.key.key == SDLK_N)
+            case GameState::Paused:
             {
-                m_level = 1;
-                startNewLevel();
+                if(event.key.key == SDLK_ESCAPE)
+                {
+                    m_state = GameState::Playing;
+                }
+                
+                if(event.key.key == SDLK_R)
+                {
+                    startNewLevel();
+                }
+
+                if(event.key.key == SDLK_N)
+                {
+                    m_level = 1;
+                    startNewLevel();
+                }
+
+                break;
+            }
+            case GameState::Won:
+            {
+                if(event.key.key == SDLK_SPACE)
+                {
+                    m_level++;
+                    startNewLevel();
+                }
+                break;
+            }
+            case GameState::Lost:
+            {
+                if(event.key.key == SDLK_SPACE)
+                {
+                    m_level = 1;
+                    startNewLevel();
+                }
+                break;
+            }
             }
         }
     }

@@ -12,6 +12,7 @@ add_executable(ProjectMinami
     src/Grid.cpp
     src/MazeGenerator.cpp
     src/Hud.cpp
+    src/Pathfinding.cpp
 )
 
 target_include_directories(ProjectMinami PRIVATE

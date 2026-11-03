@@ -7,6 +7,7 @@
 #include "Camera.h"
 #include "LevelConfig.h"
 #include "Hud.h"
+#include "Pathfinding.h"
 
 class Game
 {
@@ -24,15 +25,16 @@ private:
     Player m_player;
     Grid m_grid;
     Hud m_hud;
-    GameState m_state = GameState::Playing;
+    GameState m_state = GameState::Menu;
     Vec2 readMovementInput();
     Camera m_camera;
     int m_level = 1;
-    float m_levelTime = 0;
+    float m_timeLeft = 30.0f;
         
     void startNewLevel();
 
     void update(float deltaTime);
     void render();
+    void renderOverlay(SDL_Color color, const std::string& message);
     void handleEvents();
 };

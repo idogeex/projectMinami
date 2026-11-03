@@ -17,7 +17,10 @@ enum class TileType : uint8_t
 enum class GameState
 {
     Playing,
-    Won
+    Won,
+    Lost,
+    Menu,
+    Paused
 };
 
 struct Point

@@ -8,5 +8,5 @@
 class Pathfinding
 {
 public:
-    int shortestPathLength(const Grid& grid, Point start, Point goal);
+    static int shortestPathLength(const Grid& grid, Point start, Point goal);
 };
