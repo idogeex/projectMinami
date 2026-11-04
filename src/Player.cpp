@@ -11,7 +11,6 @@ void Player::render(SDL_Renderer* renderer, const Camera& camera) const
 
 void Player::update(float deltaTime, Vec2 direction, const Grid& grid)
 {
-    float tempX = m_x;
     m_x += direction.x * m_speed * deltaTime;
     if(grid.collidesWith(getBounds()))
     {
@@ -25,7 +24,12 @@ void Player::update(float deltaTime, Vec2 direction, const Grid& grid)
             int col = static_cast<int>(std::floor(m_x / TILE_SIZE));
             m_x = (col + 1) * TILE_SIZE;
         }
-        else if(direction.y > 0)
+    }
+
+    m_y += direction.y * m_speed * deltaTime;
+    if(grid.collidesWith(getBounds()))
+    {
+        if(direction.y > 0)
         {
             int row = static_cast<int>(std::floor((m_y + m_size - 0.001f) / TILE_SIZE));
             m_y = row * TILE_SIZE - m_size;
@@ -36,23 +40,6 @@ void Player::update(float deltaTime, Vec2 direction, const Grid& grid)
             m_y = (row + 1) * TILE_SIZE;
         }
     }
-
-    float tempY = m_y;
-    m_y += direction.y * m_speed * deltaTime;
-    if(grid.collidesWith(getBounds()))
-    {
-        m_y = tempY;
-    }
-}
-
-void Player::takeDamage(int amount)
-{
-    m_currentHP -= amount;
-    if(m_currentHP <= 0)
-    {
-        m_currentHP = 0;
-    }
-    SDL_Log("Player received damage: %d, Current HP: %d, %s", amount, m_currentHP, isAlive() ? "true" : "false");
 }
 
 SDL_FRect Player::getBounds() const

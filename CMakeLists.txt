@@ -29,6 +29,12 @@ target_link_libraries(ProjectMinami PRIVATE
     SDL3_ttf
 )
 
+target_compile_options(ProjectMinami PRIVATE -Wall -Wextra)
+
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    set_target_properties(ProjectMinami PROPERTIES WIN32_EXECUTABLE ON)
+endif()
+
 add_custom_command(TARGET ProjectMinami POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${CMAKE_SOURCE_DIR}/dll/SDL3.dll"

@@ -61,7 +61,6 @@ void Game::startNewLevel()
     {
         m_timeLeft = steps * TILE_SIZE / m_player.getSpeed() * config.timeFactor;
     }
-    SDL_Log("Path: %d steps, time limit: %.1f s", steps, m_timeLeft);
 
     m_camera.worldWidth = m_grid.getWidth() * TILE_SIZE;
     m_camera.worldHeight = m_grid.getHeight() * TILE_SIZE;
@@ -80,7 +79,7 @@ void Game::render()
     {
         m_grid.render(m_renderer, m_camera);
         m_player.render(m_renderer, m_camera);
-        m_hud.render(m_renderer, m_level, m_player.getHP(), static_cast<int>(std::ceil(m_timeLeft)));
+        m_hud.render(m_renderer, m_level, static_cast<int>(std::ceil(m_timeLeft)));
     }
 
     switch(m_state)

@@ -27,11 +27,10 @@ bool Hud::init()
     return true;
 }
 
-void Hud::render(SDL_Renderer* renderer, int level, int hp, int seconds)
+void Hud::render(SDL_Renderer* renderer, int level, int seconds)
 {
     drawText(renderer, m_levelText, "Level: " + std::to_string(level), 5, 10, textColor, false);
     drawText(renderer, m_timeText, "Time: " + std::to_string(seconds), 5, 40, textColor, false);
-    drawText(renderer, m_HPText, "HP: " + std::to_string(hp), 5, 70, textColor, false);
 }
 
 void Hud::renderMessage(SDL_Renderer* renderer, const std::string& text)
@@ -92,7 +91,6 @@ bool Hud::drawText(SDL_Renderer* renderer, CachedText &slot,
 
 void Hud::shutDown()
 {
-    freeSlot(m_HPText);
     freeSlot(m_levelText);
     freeSlot(m_messageText);
     freeSlot(m_timeText);

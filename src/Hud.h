@@ -8,7 +8,7 @@ class Hud
 public:
     Hud() = default;
     bool init();
-    void render(SDL_Renderer* renderer, int level, int hp, int seconds);
+    void render(SDL_Renderer* renderer, int level, int seconds);
     void renderMessage(SDL_Renderer* renderer, const std::string& text);
     void shutDown();
 private:
@@ -21,7 +21,6 @@ private:
 
     CachedText m_levelText;
     CachedText m_timeText;
-    CachedText m_HPText;
     CachedText m_messageText;
     TTF_Font* m_font = nullptr;
 

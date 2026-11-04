@@ -4,8 +4,6 @@
 constexpr int WINDOW_WIDTH = 1280;
 constexpr int WINDOW_HEIGHT = 720;
 constexpr int TILE_SIZE = 40;
-// constexpr int LAB_WIDTH = 15;
-// constexpr int LAB_HEIGHT = 9;
 
 enum class TileType : uint8_t
 {
@@ -28,10 +26,3 @@ struct Point
     int x;
     int y;
 };
-
-//notes
-/*
-    SDL_SetRenderDrawColor(m_renderer, 26, 26, 26, 255); // deep charcoal for the floor
-    SDL_SetRenderDrawColor(m_renderer, 51, 0, 102, 255); // walls deep violet
-    SDL_SetRenderDrawColor(m_renderer, 148, 0, 211, 255); // or dark violet
-*/
