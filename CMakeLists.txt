@@ -30,6 +30,7 @@ target_link_libraries(ProjectMinami PRIVATE
 )
 
 target_compile_options(ProjectMinami PRIVATE -Wall -Wextra)
+target_link_options(ProjectMinami PRIVATE -static-libgcc -static-libstdc++)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
     set_target_properties(ProjectMinami PROPERTIES WIN32_EXECUTABLE ON)

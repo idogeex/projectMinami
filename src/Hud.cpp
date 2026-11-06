@@ -16,7 +16,7 @@ bool Hud::init()
         return false;
     }
     std::string path(rawBasePath);
-    std::string assetPath = path + "assets/Frostfang-Regular.ttf";
+    std::string assetPath = path + "assets/Redaction50-Regular.ttf";
     m_font = TTF_OpenFont(assetPath.c_str(), 36);
     if(!m_font)
     {

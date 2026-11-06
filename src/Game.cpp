@@ -205,6 +205,11 @@ void Game::handleEvents()
                     m_level = 1;
                     startNewLevel();
                 }
+
+                if(event.key.key == SDLK_ESCAPE)
+                {
+                    m_running = false;
+                }
                 break;
             }
             case GameState::Playing:
@@ -241,6 +246,11 @@ void Game::handleEvents()
                 {
                     m_level++;
                     startNewLevel();
+                }
+
+                if(event.key.key == SDLK_ESCAPE)
+                {
+                    m_running = false;
                 }
                 break;
             }
